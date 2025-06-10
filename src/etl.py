@@ -3,19 +3,30 @@ import pandas as pd
 import os
 
 def extraer_datos(url):
-    print("📥 Extrayendo datos desde la API...")
+    print(" Extrayendo datos desde la API...")
     response = requests.get(url)
     response.raise_for_status()
     data = response.json()
     return pd.DataFrame(data)
 
 def transformar_datos(df):
-    print("🔧 Transformando datos...")
-    df.columns = df.columns.str.lower().str.replace(' ', '_')
+    print(" Transformando datos...")
+
+    # Aplanar columnas anidadas
+    columnas_anidadas = ['customer', 'phone', 'internet', 'account']
+
+    for col in columnas_anidadas:
+        anidada = pd.json_normalize(df[col])
+        anidada.columns = [f"{col}_{subcol}".lower() for subcol in anidada.columns]
+        df = pd.concat([df.drop(columns=[col]), anidada], axis=1)
+
+    # Normalizar nombres de columnas
+    df.columns = df.columns.str.replace(' ', '_').str.lower()
+    
     return df
 
 def cargar_datos(df, ruta_salida="data/datos_telecomx.csv"):
-    print(f"💾 Guardando datos en {ruta_salida}")
+    print(f" Guardando datos en {ruta_salida}")
     os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
     df.to_csv(ruta_salida, index=False)
 
