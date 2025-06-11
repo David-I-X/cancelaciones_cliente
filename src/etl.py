@@ -26,8 +26,16 @@ def transformar_datos(df):
     return df
 
 def cargar_datos(df, ruta_salida="data/datos_telecomx.csv"):
+    # Obtener el directorio de la ruta de salida
+    directorio = os.path.dirname(ruta_salida)
+    
+    # Crear el directorio si no existe
+    if not os.path.exists(directorio):
+        print(f" Creando directorio: {directorio}")
+        os.makedirs(directorio)
+    
+    # Guardar los datos
     print(f" Guardando datos en {ruta_salida}")
-    os.makedirs(os.path.dirname(ruta_salida), exist_ok=True)
     df.to_csv(ruta_salida, index=False)
 
 if __name__ == "__main__":
